@@ -1,0 +1,16 @@
+<!ELEMENT gallery (galleryName, folderName, imagesFullsize, images)>
+<!ELEMENT galleryName (#PCDATA)>
+<!ELEMENT folderName (#PCDATA)>
+<!ELEMENT imagesFullsize (#PCDATA)>
+
+<!ELEMENT images (image*)>
+<!ELEMENT image (filename, title, description, date, location, physical)>
+<!ELEMENT filename (#PCDATA)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT date (#PCDATA)>
+<!ELEMENT location (#PCDATA)>
+
+<!ELEMENT physical (width?, height?)>
+<!ELEMENT width (#PCDATA)>
+<!ELEMENT height (#PCDATA)>

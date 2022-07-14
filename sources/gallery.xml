@@ -1,0 +1,310 @@
+﻿<!-- /* Flag:Version=1.2 */ -->
+<!-- // http://www.photogallerygenerator.com // -->
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+
+  <!-- Fill up the JavaScript images[] array, one image at a time -->
+  <xsl:template match="image">
+    <!-- For some reason, it's very important that we don't have spaces in each line of images.push(); -->
+    images.push(new MyImage("<xsl:value-of select="filename"/>", "<xsl:apply-templates select="title"/>", "<xsl:apply-templates select="description"/>", "<xsl:apply-templates select="date"/>", "<xsl:apply-templates select="location"/>", <xsl:value-of select="physical/width"/>, <xsl:value-of select="physical/height"/>));
+  </xsl:template>
+
+  <xsl:template match="gallery">
+    <html>
+      <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+        <title><xsl:value-of select="galleryName"/></title>
+        <link rel="stylesheet" type="text/css" href="gallery.css" />
+          
+        <!-- JavaScript includes -->
+        <script type="text/javascript" language="javascript" src="gallery.js" />
+            
+        <!-- Gallery data initialized by XSLT and passed into JavaScript -->
+        <script type="text/javascript" language="javascript">
+          function InitData() {
+            images = new Array();
+            numImages = <xsl:value-of select="count(//image)"/>;
+            galleryName = "<xsl:value-of select="galleryName"/>";
+            folderName = "<xsl:value-of select="folderName"/>";
+            imagesFullsize = "<xsl:value-of select="imagesFullsize"/>";
+            actualwidth = (numImages + 4) * totalImageWidth;
+            <!-- fill up the images[] array here -->
+            <xsl:apply-templates select="images/image"/>
+            checkBrowserWidth();
+          }
+          <!-- // Set a 1-second delay before initialization to prevent Safari from screwing up
+          // Hmm, it seems that body onload="InitGallery()" works better :)
+          //setTimeout("InitGallery()", 1000)  -->
+        </script>
+        <style>
+          body { background: #FFFFFF; } <!-- Flag:Background -->
+        </style>
+      </head>
+
+      <body onload="InitGallery()">
+        <xsl:apply-templates select="images"/>
+      </body>
+    </html>
+  </xsl:template>
+
+  <!-- This template fills up the body of the HTML file -->
+  <xsl:template match="images">
+    <center>
+
+      <!-- ThumbnailsPanel -->
+      <div id="ThumbnailsPanel">
+        <div id="ThumbnailTitle">
+            <xsl:value-of select="//galleryName"/>
+        </div>
+        <!-- width="800px" for 5 thumbnails OR width="640px" for 4 thumbnails -->
+        <table border="0px" cellpadding="0px" cellspacing="0px" width="800px">  <!-- flag:ThumbnailsWidth -->
+          <xsl:for-each select="image">
+              <!-- mod 5 for 5 thumbnails OR mod 4 for 4 thumbnails -->
+              <xsl:if test="((position() - 1) mod 5) = 0"><tr></tr><td></td></xsl:if> <!-- flag:ThumbnailsMod -->
+              <td valign="middle" align="center" height="140px" width="160px">
+                <a>
+                  <img border="0px" class="thumbnail" alt="">
+                    <xsl:attribute name="src">
+                      <xsl:value-of select="//folderName"/>/thumbnails/<xsl:value-of select="filename"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="height">
+                      <xsl:variable name="myH" select="physical/height" />
+                      <xsl:variable name="myW" select="physical/width" />
+                      <xsl:choose>
+                        <xsl:when test="number($myH) &gt; number($myW)">
+                          130px;
+                        </xsl:when>
+                        <xsl:otherwise>
+                          100px;
+                        </xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:attribute>
+                    <xsl:attribute name="onclick">
+                      SkipToImage("<xsl:value-of select="filename"/>", <xsl:value-of select="position() - 1" /> );
+                    </xsl:attribute>
+                  </img>
+                </a>
+            </td>
+          </xsl:for-each>
+        </table>
+      </div>  
+      <!-- /ThumbnailsPanel -->
+
+      <!-- MainDisplayPanel -->
+      <div id="MainDisplayPanel">
+
+        <!-- selectedImageSection -->
+        <div class="selectedImageSection">
+          <span id="imgFullsize"><img id="selectedImage" src="" alt="main image" border="0" /></span>
+          <div class="buttonPane" style="position: relative; height: 15px;">
+            <span class="centerButton">
+              <a class="link"
+                 onmousedown='PrevPicHandler();'
+                 onmouseup='buttonHeldDown=false;'
+                 onmouseout='buttonHeldDown=false;'><img src="img_left.gif" alt="Précédant / Previous" /></a> <!-- Flag:Previous -->
+              &#160;&#160;&#160;
+              <span id="picIndex">1</span> / <span id="totalPicNum"><xsl:value-of select="count(//image)" /></span>
+              &#160;&#160;&#160;
+              <a class="link"
+                 onmousedown='NextPicHandler();'
+                 onmouseup='buttonHeldDown=false;'
+                 onmouseout='buttonHeldDown=false;'><img src="img_right.gif" alt="Suivant / Next" /></a> <!-- Flag:Next -->
+            </span>
+          </div>
+
+          <div id="photoTitle">
+            &#160;&#160;&#160;
+            <span id="title">Un instant! Chargement... / Please wait! Loading...</span> <!-- flag:Wait -->
+            <span id="date"></span>
+            <span id="mapLocation"></span>
+            <div id="photoDescription"></div>
+          </div>
+        </div>
+        <!-- /selectedImageSection -->
+
+        <!-- sliderPane -->
+        <div id="sliderPane" class="sliderPane">
+          <div class="centerSlide">
+            <img class="thumbnail" src="img_frame.gif" alt="" onclick="SelectCenterImage();" />
+          </div>
+          <!--
+          width of 5 thumbnail in the slider = 5 slides * 150px per slide = 750px height of the slider = 142px
+          width of 3 thumbnail in the slider = 3 slides * 150px per slide = 450px height of the slider = 142px
+          -->
+          <div style="position: relative; width: 750px; height: 142px; overflow: hidden;">  <!-- flag:SliderWidth -->
+            <!-- span SliderContents  -->
+            <span id="SliderContents" style="text-align:center; position:absolute; top:0px; left:0px;">
+              <nobr>
+                <xsl:for-each select="image">
+                  <xsl:variable name="filename" select="filename"/>
+                  <div class="slide">
+                    <xsl:attribute name="style">
+                      <!-- + 1 if 5 thumbnails in slider and + 0 if 3 thumbnails in slider -->
+                      left:<xsl:value-of select="(position() + 1) * 150" />px;  <!-- flag:SliderPosition -->
+                    </xsl:attribute>
+                    <img alt="" class="thumbnail">
+                      <xsl:attribute name="src">
+                          <xsl:value-of select="//folderName"/>/thumbnails/<xsl:value-of select="$filename"/>
+                      </xsl:attribute>
+                      <!-- The thumbnail dimensions should have their longer side be 130 pixels, and the slide dimensions are 150 x 142 -->
+                      <xsl:attribute name="style">
+                        position: absolute;
+                        top:
+                        <xsl:variable name="myHStr" select="physical/height" />
+                        <xsl:variable name="myWStr" select="physical/width" />
+                        <xsl:variable name="myH" select="number($myHStr)" />
+                        <xsl:variable name="myW" select="number($myWStr)" />
+                        <xsl:choose>
+                          <xsl:when test="$myH &gt; $myW">
+                            4px;
+                          </xsl:when>
+                          <xsl:otherwise>
+                            20px;
+                        </xsl:otherwise>
+                        </xsl:choose>
+                        left:
+                        <xsl:choose>
+                          <xsl:when test="$myH &gt; $myW">
+                            <xsl:value-of select="((150 - (($myW div $myH) * 130)) div 2) - 2" />px;
+                            <!-- 22px; -->
+                          </xsl:when>
+                          <xsl:otherwise>
+                            5px;
+                          </xsl:otherwise>
+                        </xsl:choose>
+                      </xsl:attribute>           
+                      <xsl:attribute name="height">
+                        <xsl:variable name="myH" select="physical/height" />
+                        <xsl:variable name="myW" select="physical/width" />
+                        <xsl:choose>
+                          <xsl:when test="number($myH) &gt; number($myW)">
+                            130px;
+                          </xsl:when>
+                          <xsl:otherwise>
+                            100px;
+                          </xsl:otherwise>
+                        </xsl:choose>
+                      </xsl:attribute>
+                      <xsl:attribute name="onclick">
+                        LoadImage("<xsl:value-of select="$filename"/>", <xsl:value-of select="position() - 1" /> );
+                      </xsl:attribute>
+                    </img>
+                  </div>
+                </xsl:for-each>
+              </nobr>
+            </span>
+            <!-- /span SliderContents  -->
+          </div>
+        </div>  
+        <!-- /sliderPane -->
+
+        <!-- buttonPane -->
+        <div class="buttonPane">
+          <span class="leftButton">
+            <a class="link" onclick='JumpLeftHandler();'><img src="img_previous.gif" /></a>
+          </span>
+
+          <a id="buttonSlideShow" class="link" onmousedown='SlideShow();'><img name="SlideShowButton" src="img_play.gif" alt="Diaporama / SlideShow" /></a> <!-- flag:SlideShow -->
+          &#160;
+          <input type="text" id="inputTimeSlideShow" style="text-align:center; position:absolute; top:0px;" value="5" size="1"></input> <!-- flag:TimeSlideShow -->
+
+          <span class="rightButton">
+            <a class="link" onclick='JumpRightHandler();'><img src="img_next.gif" /></a>
+          </span>
+        </div>  
+        <!-- /buttonPane -->
+
+      </div>
+      <!-- /MainDisplayPanel -->
+
+      <!-- footer -->
+      <div class="footer">
+        <div id="GalleryTitle" style="position: relative; height: 30px;">
+          <xsl:value-of select="//galleryName"/>
+        </div>
+        <div id="ToggleThumbnails">
+          <a class="link" id="ToggleThumbnailsLink" onclick='ToggleThumbnailPanel();'>Afficher grandes images / Show large images</a> <!-- Flag:ShowLarge -->
+        </div>
+      </div>
+      <!-- /footer -->
+    </center>
+  </xsl:template>
+
+  <!-- Ok, I've modified the following function to add in a normalize-space()
+     call to strip newline characters as well, because Safari apparently
+     doesn't like newlines in strings when processing JavaScript, 
+     but Mozilla doesn't mind ... well, gotta make it work on the
+     greatest possible number of browsers ... -->
+
+  <!-- XSLT 1.0 doesn't have string replace(), so here is something
+       I found at http://aspn.activestate.com/ASPN/Cookbook/XSLT/Recipe/65426 -->
+  <!-- reusable replace-string function -->
+  <xsl:template name="replace-string">
+    <xsl:param name="text"/>
+    <xsl:param name="from"/>
+    <xsl:param name="to"/>
+    <xsl:choose>
+      <xsl:when test="contains($text, $from)">
+        <xsl:variable name="before" select="substring-before($text, $from)"/>
+        <xsl:variable name="after" select="substring-after($text, $from)"/>
+        <!-- <xsl:variable name="prefix" select="concat($before, $to)"/> -->
+        <xsl:value-of select="normalize-space($before)"/>
+        <xsl:value-of select="$to"/>
+        <xsl:call-template name="replace-string">
+      <xsl:with-param name="text" select="$after"/>
+       <xsl:with-param name="from" select="$from"/>
+      <xsl:with-param name="to" select="$to"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space($text)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  <!-- We need to replace all instances of double quotes (") in the
+       title and description with the escape sequence (\") so that
+       JavaScript does not croak, since we are double-quoting these
+       strings before passing them into the JavaScript images array.
+  
+       Also (see the replace-string template above), we need to 
+       cut out all newlines from the titles and descriptions
+       by using normalize-space() because Safari doesn't like
+       newlines in its JavaScript strings.
+  
+       TODO: What I really should do is a search-and-replace of 
+             newline characters for 'quoted' newline characters
+             so the following input:
+  
+       "hello world two newlines"
+       would get transformed into the following output:
+       "hello world\n\ntwo newlines"
+       Right now, I just cut out newlines completely.
+   -->
+  <xsl:template match="title">
+    <xsl:call-template name="replace-string">
+      <xsl:with-param name="text" select="."/>
+      <xsl:with-param name="from" select="'&quot;'" />
+      <xsl:with-param name="to" select="'\&quot;'" />
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="description">
+    <xsl:call-template name="replace-string">
+      <xsl:with-param name="text" select="."/>
+      <xsl:with-param name="from" select="'&quot;'"/>
+      <xsl:with-param name="to" select="'\&quot;'"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="date">
+    <xsl:call-template name="replace-string">
+      <xsl:with-param name="text" select="."/>
+      <xsl:with-param name="from" select="'&quot;'"/>
+      <xsl:with-param name="to" select="'\&quot;'"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="text()">
+    <xsl:value-of select="normalize-space(.)"/>
+  </xsl:template>
+
+</xsl:transform>
