@@ -1,0 +1,225 @@
+/* Flag:Version=1.2 */
+.thumbnail
+{
+  CURSOR: pointer;
+}
+
+DIV#sliderPane DIV.slide
+{
+  BORDER-RIGHT: 1px solid;
+  BORDER-TOP: 1px solid;
+  OVERFLOW: hidden;
+  BORDER-LEFT: 1px solid;
+  WIDTH: 145px;
+  BORDER-BOTTOM: 1px solid;
+  POSITION: absolute;
+  HEIGHT: 140px;
+  TEXT-ALIGN: center;
+}
+
+DIV#sliderPane DIV.centerSlide
+{
+  WIDTH: 160px;
+  HEIGHT: 155px;
+  POSITION: absolute;
+  LEFT: 293px;
+  TOP: -6px;
+  Z-INDEX: 1;
+}
+
+DIV.sliderPane
+{
+  WIDTH: 750px;
+  Z-INDEX: 0;
+  POSITION: relative;
+}
+
+DIV.selectedImageSection
+{
+  WIDTH: 1440px;  /* Flag:LargerImageSizeWidthIntoGallery */
+  POSITION: relative;
+}
+
+DIV.selectedImageSection DIV#photoTitle
+{ 
+  MARGIN-TOP: 6px;
+  MARGIN-BOTTOM: 3px;
+}
+
+DIV.selectedImageSection SPAN#title
+{
+  FONT-SIZE: 18px; /* Flag:TitleSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:TitleFont */
+  FONT-WEIGHT: bold; /* Flag:TitleBold */
+  FONT-STYLE: normal; /* Flag:TitleStyle */
+  COLOR: #400000;    /* Flag:TitleColor */
+}
+
+DIV.selectedImageSection SPAN#date
+{
+  MARGIN-LEFT: 30px;
+  FONT-SIZE: 14px; /* Flag:DateSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:DateFont */
+  FONT-WEIGHT: bold; /* Flag:DateBold */
+  FONT-STYLE: normal; /* Flag:DateStyle */
+  COLOR: #400000;    /* Flag:DateColor */
+}
+
+DIV.selectedImageSection DIV#photoDescription
+{
+  MARGIN-BOTTOM: 10px;
+  WIDTH: 500px;
+  FONT-SIZE: 14px; /* Flag:DescriptionSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:DescriptionFont */
+  FONT-WEIGHT: bold; /* Flag:DescriptionBold */
+  FONT-STYLE: normal; /* Flag:DescriptionStyle */
+  COLOR: #400000;    /* Flag:DescriptionColor */
+}
+
+DIV.selectedImageSection SPAN#mapLocation
+{
+  FONT-SIZE: 15px;
+  LEFT: 800px;
+  CURSOR: pointer;
+  POSITION: absolute;
+  TEXT-ALIGN: right;
+  TEXT-DECORATION: none;
+  OVERFLOW: hidden;
+}
+
+DIV.buttonPane
+{
+  MARGIN-TOP: 10px;
+  WIDTH: 750px;
+  POSITION: relative;
+}
+
+DIV.buttonPane SPAN.leftButton
+{
+  /* If 5 thumbnails in slider: 15px, If 3 thumbnails in slider: 150px */
+  LEFT: 15px;   /* Flag:SliderLeftButton */
+  CURSOR: pointer;
+  POSITION: absolute;
+  TEXT-ALIGN: left;
+  TEXT-DECORATION: underline;
+  FONT-SIZE: 15px;
+  COLOR: #3D477B;	
+}
+
+DIV.buttonPane SPAN.rightButton
+{
+  /* If 5 thumbnails in slider: 680px, If 3 thumbnails in slider: 550px */
+  LEFT: 680px;  /* Flag:SliderRightButton */
+  CURSOR: pointer;
+  POSITION: absolute;
+  TEXT-ALIGN: right;
+  TEXT-DECORATION: underline;
+  FONT-SIZE: 15px;
+  COLOR: #3D477B;
+}
+
+DIV.buttonPane SPAN.centerButton
+{
+  LEFT: 72px;
+  WIDTH: 600px;
+  POSITION: absolute;
+  TEXT-ALIGN: center;
+  FONT-SIZE: 18px; /* Flag:CountSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:CountFont */
+  FONT-WEIGHT: bold; /* Flag:CountBold */
+  FONT-STYLE: normal; /* Flag:CountStyle */
+  COLOR: #400000;    /* Flag:CountColor */
+}
+
+DIV.buttonPane SPAN.centerButtonslideShow
+{
+MARGIN-TOP: 55px;
+  TEXT-ALIGN: center;
+}
+
+DIV.footer
+{
+  MARGIN-TOP: 36px;
+  WIDTH: 745px;
+  POSITION: relative;
+  TEXT-ALIGN: right;
+  FONT-SIZE: 14px; /* Flag:LinkSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:LinkFont */
+  FONT-WEIGHT: bold; /* Flag:LinkBold */
+  FONT-STYLE: normal; /* Flag:LinkStyle */
+  COLOR: #0000A0;    /* Flag:LinkColor */
+}
+
+DIV#GalleryTitle
+{ 
+  POSITION: relative;
+  TEXT-ALIGN: center;
+  FONT-VARIANT: small-caps;
+  FONT-SIZE: 20px; /* Flag:GalleryTitleSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:GalleryTitleFont */
+  FONT-WEIGHT: bold; /* Flag:GalleryTitleBold */
+  FONT-STYLE: normal; /* Flag:GalleryTitleStyle */
+  COLOR: #800000;    /* Flag:GalleryTitleColor */
+}
+
+DIV#ThumbnailTitle
+{ 
+  MARGIN-TOP: 25px;
+  MARGIN-BOTTOM: 5px;
+  POSITION: relative;
+  TEXT-ALIGN: center;
+  FONT-VARIANT: small-caps;
+  FONT-SIZE: 20px; /* Flag:GalleryTitleSize */
+  FONT-FAMILY: Arial, sans-serif; /* Flag:GalleryTitleFont */
+  FONT-WEIGHT: bold; /* Flag:GalleryTitleBold */
+  FONT-STYLE: normal; /* Flag:GalleryTitleStyle */
+  COLOR: #800000;    /* Flag:GalleryTitleColor */
+}
+
+DIV#ToggleThumbnails
+{
+  TEXT-ALIGN: center;
+  FONT-SIZE: 14px;
+  MARGIN-TOP: 5px;
+  MARGIN-BOTTOM: 35px;
+}
+
+DIV#MainDisplayPanel
+{
+  POSITION: relative;
+  display: none; /* Avoid ugliness when the gallery page is loading */
+}
+
+DIV#ThumbnailsPanel
+{
+  POSITION: relative;
+}
+
+.link
+{
+  TEXT-DECORATION: underline;
+  CURSOR: pointer;
+}
+
+DIV.buttonPane SPAN.centerButton SPAN.desc
+{
+  FONT-SIZE: 30px;
+  FONT-FAMILY: arial, sans-serif;
+}
+
+/*
+A
+{
+  COLOR: #3D477B;
+}
+
+A:visited
+{
+  COLOR: #3D477B; 
+}
+
+A:hover
+{
+  COLOR: #6E870C;
+}
+*/
